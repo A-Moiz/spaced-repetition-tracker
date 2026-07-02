@@ -4,8 +4,8 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-import { getUserIds } from "./common.mjs";
 import { getData, addData, clearData } from "./storage.mjs";
+import { getUserIds, createRevisionDates, addMonths } from "./common.mjs";
 
 const userSelect = document.getElementById("select-user");
 const form = document.getElementById("topic-form");
@@ -97,32 +97,6 @@ function handleForm(event) {
   loadAgenda(userID);
   form.reset();
   setTodayDate();
-}
-
-function addMonths(date, months) {
-  const d = new Date(date);
-  const targetMonth = d.getMonth() + months;
-  const year = d.getFullYear() + Math.floor(targetMonth / 12);
-  const month = targetMonth % 12;
-  return new Date(Date.UTC(year, month, d.getDate()));
-}
-
-function createRevisionDates(topic, startDate) {
-  const start = new Date(startDate);
-  const dates = [
-    new Date(start),
-    addMonths(start, 1),
-    addMonths(start, 3),
-    addMonths(start, 6),
-    addMonths(start, 12),
-  ];
-
-  dates[0].setDate(dates[0].getDate() + 7);
-  return dates.map((date) => ({
-    topic,
-
-    date: date.toISOString().split("T")[0],
-  }));
 }
 
 function clearUserData(userID) {
