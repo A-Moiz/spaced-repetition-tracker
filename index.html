@@ -2,6 +2,35 @@
 <html>
   <head>
     <script type="module" src="script.mjs"></script>
+    <title>Spaced Repitition Tracker</title>
   </head>
-  <body></body>
+  <body>
+    <div>
+      <h1>Spaced Repitition Tracker</h1>
+      <main>
+        <section>
+          <label for="select-user">Select User:</label>
+          <select name="select-user" id="select-user">
+            <option value="" disabled selected>Select user</option>
+          </select>
+        </section>
+
+        <section>
+          <form id="topic-form">
+            <h2>Add Topic</h2>
+            <label for="topic-title">Topic Title: </label>
+            <input type="text" id="topic-title" name="topic-title" required />
+            <label for="topic-date">Topic Date:</label>
+            <input type="date" name="topic-date" id="topic-date" required />
+            <button type="submit">Add Topic</button>
+          </form>
+        </section>
+
+        <section id="topic-container">
+          <h3 id="user-topic-status">No user is selected.</h3>
+          <ul id="topic-list"></ul>
+        </section>
+      </main>
+    </div>
+  </body>
 </html>

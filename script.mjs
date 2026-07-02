@@ -6,7 +6,20 @@
 
 import { getUserIds } from "./common.mjs";
 
-window.onload = function () {
+const userSelect = document.getElementById("select-user");
+
+function init() {
+  createUserOptions();
+}
+
+function createUserOptions() {
   const users = getUserIds();
-  document.querySelector("body").innerText = `There are ${users.length} users`;
-};
+  users.forEach((id) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = `User ${id}`;
+    userSelect.appendChild(option);
+  });
+}
+
+init();
