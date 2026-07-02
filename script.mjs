@@ -53,21 +53,19 @@ function loadAgenda(userID) {
   if (agenda.length === 0) {
     userTopicStatus.textContent = `No agenda for user ${userID}`;
     topicList.innerHTML = "";
+    topicList.hidden = true;
     clearDataBtn.hidden = true;
     return;
   } else {
+    topicList.hidden = false;
     clearDataBtn.hidden = false;
   }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const futureItems = agenda.filter((item) => {
-    return new Date(item.date) >= today;
-  });
-
-  futureItems.sort((a, b) => {
-    return new Date(a.date) - new Date(b.date);
-  });
+  const futureItems = agenda
+    .filter((item) => new Date(item.date) >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   renderAgenda(futureItems);
 }
