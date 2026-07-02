@@ -100,9 +100,11 @@ function handleForm(event) {
 }
 
 function addMonths(date, months) {
-  const newDate = new Date(date);
-  newDate.setMonth(newDate.getMonth() + months);
-  return newDate;
+  const d = new Date(date);
+  const targetMonth = d.getMonth() + months;
+  const year = d.getFullYear() + Math.floor(targetMonth / 12);
+  const month = targetMonth % 12;
+  return new Date(Date.UTC(year, month, d.getDate()));
 }
 
 function createRevisionDates(topic, startDate) {
