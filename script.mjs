@@ -5,11 +5,29 @@
 // You can't open the index.html file using a file:// URL.
 
 import { getUserIds } from "./common.mjs";
+import { getData, addData, clearData } from "./storage.mjs";
 
 const userSelect = document.getElementById("select-user");
+const form = document.getElementById("topic-form");
+const topicTitle = document.getElementById("topic-title");
+const topicDate = document.getElementById("topic-date");
+const topicList = document.getElementById("topic-list");
+const userTopicStatus = document.getElementById("user-topic-status");
+const clearDataBtn = document.getElementById("clear-data");
+
+userSelect.addEventListener("change", () => {
+  loadAgenda(userSelect.value);
+});
+
+form.addEventListener("submit", handleForm);
+
+clearDataBtn.addEventListener("click", () => {
+  clearUserData(userSelect.value);
+});
 
 function init() {
   createUserOptions();
+  setTodayDate();
 }
 
 function createUserOptions() {
@@ -20,6 +38,96 @@ function createUserOptions() {
     option.textContent = `User ${id}`;
     userSelect.appendChild(option);
   });
+}
+
+function setTodayDate() {
+  const today = new Date().toISOString().split("T")[0];
+  topicDate.value = today;
+}
+
+function loadAgenda(userID) {
+  if (!userID) return;
+
+  const agenda = getData(userID) || [];
+
+  if (agenda.length === 0) {
+    userTopicStatus.textContent = `No agenda for user ${userID}`;
+    topicList.innerHTML = "";
+    clearDataBtn.hidden = true;
+    return;
+  } else {
+    clearDataBtn.hidden = false;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const futureItems = agenda.filter((item) => {
+    return new Date(item.date) >= today;
+  });
+
+  futureItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  renderAgenda(futureItems);
+}
+
+function renderAgenda(items) {
+  topicList.innerHTML = "";
+  userTopicStatus.textContent = "Upcoming revisions";
+
+  items.forEach((item) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = `${item.topic} - ${item.date}`;
+    topicList.appendChild(listItem);
+  });
+}
+
+function handleForm(event) {
+  event.preventDefault();
+  const userID = userSelect.value;
+
+  if (!userID) {
+    alert("Please select a user.");
+    return;
+  }
+
+  const topic = topicTitle.value.trim();
+  const date = topicDate.value;
+  const revisionDates = createRevisionDates(topic, date);
+  addData(userID, revisionDates);
+  loadAgenda(userID);
+  form.reset();
+  setTodayDate();
+}
+
+function addMonths(date, months) {
+  const newDate = new Date(date);
+  newDate.setMonth(newDate.getMonth() + months);
+  return newDate;
+}
+
+function createRevisionDates(topic, startDate) {
+  const start = new Date(startDate);
+  const dates = [
+    new Date(start),
+    addMonths(start, 1),
+    addMonths(start, 3),
+    addMonths(start, 6),
+    addMonths(start, 12),
+  ];
+
+  dates[0].setDate(dates[0].getDate() + 7);
+  return dates.map((date) => ({
+    topic,
+
+    date: date.toISOString().split("T")[0],
+  }));
+}
+
+function clearUserData(userID) {
+  clearData(userID);
+  loadAgenda(userID);
 }
 
 init();
